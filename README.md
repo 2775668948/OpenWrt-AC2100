@@ -1,44 +1,38 @@
-**English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
+# Actions-OpenWrt-AC2100(R2100)
 
-# Actions-OpenWrt
+[![LICENSE](https://img.shields.io/github/license/loneshore/OpenWrt-AC2100?label=LICENSE&style=flat-square)](https://github.com/loneshore/OpenWrt-AC2100/blob/main/LICENSE)
+![GitHub Stars](https://img.shields.io/github/stars/loneshore/OpenWrt-AC2100?label=Stars&logo=github&style=flat-square)
+![GitHub Forks](https://img.shields.io/github/forks/loneshore/OpenWrt-AC2100?label=Forks&logo=github&style=flat-square)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/loneshore/OpenWrt-AC2100?label=Release&logo=github&style=flat-square)
 
-[![LICENSE](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square&label=LICENSE)](https://github.com/P3TERX/Actions-OpenWrt/blob/master/LICENSE)
-![GitHub Stars](https://img.shields.io/github/stars/P3TERX/Actions-OpenWrt.svg?style=flat-square&label=Stars&logo=github)
-![GitHub Forks](https://img.shields.io/github/forks/P3TERX/Actions-OpenWrt.svg?style=flat-square&label=Forks&logo=github)
+小米路由器AC2100 OpenWrt固件自动化构建
 
-A template for building OpenWrt with GitHub Actions
+## 说明
 
-## Usage
+- 感谢 [P3TERX](https://github.com/P3TERX/Actions-OpenWrt) 的自动化构建项目
+- 基于 [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) 项目进行构建
+- 默认登录IP [192.168.1.1](http://192.168.1.1) 密码 password
+- 集成 OpenWrt Argon 主题和 Argon主题配置插件
+- 集成 EQoS、PassWall、UnblockNeteaseMusic 等常用插件
 
-- Click the [Use this template](https://github.com/P3TERX/Actions-OpenWrt/generate) button to create a new repository.
-- Generate `.config` files using [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) source code. ( You can change it through environment variables in the workflow file. )
-- Push `.config` file to the GitHub repository.
-- Select `Build OpenWrt` on the Actions page.
-- Click the `Run workflow` button.
-- When the build is complete, click the `Artifacts` button in the upper right corner of the Actions page to download the binaries.
+## 安装
 
-## Tips
+- 开启路由器SSH支持
+- 漏洞固件：[2.0.722](https://cdn.cnbj1.fds.api.mi-img.com/xiaoqiang/rom/r2100/miwifi_r2100_firmware_4b519_2.0.722.bin)、[2.0.743](https://cdn.cnbj1.fds.api.mi-img.com/xiaoqiang/rom/r2100/miwifi_r2100_all_7d7b2_2.0.743.bin)（其实无需降级，最新固件也是支持的）
+- 在浏览器访问以下链接即可开启SSH支持（STOK请登录路由器后台获取替换）
+```
+http://miwifi.com/cgi-bin/luci/;stok=<STOK>/api/misystem/set_config_iotdev?bssid=Xiaomi&user_id=admin&ssid=-h%3B%20nvram%20set%20ssh_en%3D1%3B%20nvram%20commit%3B%20sed%20-i%20's%2Fchannel%3D.*%2Fchannel%3D%5C%22debug%5C%22%2Fg'%20%2Fetc%2Finit.d%2Fdropbear%3B%20%2Fetc%2Finit.d%2Fdropbear%20start%3B%20echo%20-e%20'admin%5Cnadmin'%20%7C%20passwd%20root%3B
+```
+- 登录SSH，将固件上传到 /tmp 目录，依次执行以下代码（固件名称自行替换）
+```
+nvram set uart_en=1&&nvram set bootdelay=5&&nvram set flag_try_sys1_failed=1&&nvram commit
+　
+mtd write /tmp/xxx-kernel1.bin kernel1
+mtd -r write /tmp/xxx-rootfs0.bin rootfs0
+　
+reboot
+```
 
-- It may take a long time to create a `.config` file and build the OpenWrt firmware. Thus, before create repository to build your own firmware, you may check out if others have already built it which meet your needs by simply [search `Actions-Openwrt` in GitHub](https://github.com/search?q=Actions-openwrt).
-- Add some meta info of your built firmware (such as firmware architecture and installed packages) to your repository introduction, this will save others' time.
+## 注意
 
-## Credits
-
-- [Microsoft Azure](https://azure.microsoft.com)
-- [GitHub Actions](https://github.com/features/actions)
-- [OpenWrt](https://github.com/openwrt/openwrt)
-- [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)
-- [tmate](https://github.com/tmate-io/tmate)
-- [mxschmitt/action-tmate](https://github.com/mxschmitt/action-tmate)
-- [csexton/debugger-action](https://github.com/csexton/debugger-action)
-- [Cowtransfer](https://cowtransfer.com)
-- [WeTransfer](https://wetransfer.com/)
-- [Mikubill/transfer](https://github.com/Mikubill/transfer)
-- [softprops/action-gh-release](https://github.com/softprops/action-gh-release)
-- [ActionsRML/delete-workflow-runs](https://github.com/ActionsRML/delete-workflow-runs)
-- [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
-- [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
-
-## License
-
-[MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)
+- 刷机有风险，操作需谨慎
